@@ -1,0 +1,42 @@
+from dataset_downloaders.label_mappings import dataset_downloaders, relevance_dataset_mappings, bfo_dataset_mappings
+import os
+import argparse
+
+def save_data(download_fn, save_path, dataset_mapping):
+    df = download_fn()
+    
+    df = df[df.text.apply(type) == str]
+    
+    # Apply a mapped label if the original label is in the original label mapping
+    df.label = df.label.apply(lambda x: [mapped_label for mapped_label, orig_label in dataset_mapping.items() if x in orig_label])
+    assert (df.label.str.len() == 1).all(), f"Unmapped data. \n\n{df.label[df.label.str.len() != 1]}"
+    df.label = df.label.str[0]
+    
+    #Collate dataframe to include all labels for a given piece of feedback
+    df = df.groupby("text")["label"].apply(list).apply(lambda x: ",".join(x)).reset_index(drop=False)
+    
+    bins_df = df.label.str.get_dummies(sep=",")
+    bins_df["text"] = df["text"].str.replace("\n", ".    ").str.replace("\t", "    ")
+
+    bins_df.to_csv(save_path, index=False)
+
+def download_datasets(dataset_list, label_granularity="requirements_relevance"):
+    
+    supported_granularities = ["requirements_relevance", "bug_feature_other"]
+    
+    assert label_granularity in supported_granularities, f"{label_granularity} not in supported label granularities ({str(supported_granularities)})"
+    
+    base_save_dir = os.path.join("./data")
+    os.makedirs(base_save_dir, exist_ok = True)
+    
+    if label_granularity == "requirements_relevance":
+        dataset_mappings = relevance_dataset_mappings
+    elif label_granularity == "bug_feature_other":
+        dataset_mappings = bfo_dataset_mappings
+        
+    for dataset_name in dataset_list:
+        print(f"Downloading {dataset_name}")
+        dataset_downloader = dataset_downloaders[dataset_name]
+        dataset_mapping = dataset_mappings[dataset_name]
+        dataset_path = os.path.join(base_save_dir, f"{dataset_name}_{label_granularity}.csv")
+        save_data(dataset_downloader, dataset_path, dataset_mapping)
