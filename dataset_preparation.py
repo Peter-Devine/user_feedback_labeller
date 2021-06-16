@@ -13,14 +13,15 @@ class FeedbackDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
         
-        if self.is_multiclass:
-            item['labels'] = torch.tensor(self.labels[idx, :], dtype=torch.float)
-        else:
-            item['labels'] = torch.tensor(self.labels[idx], dtype=torch.long)
+        if self.labels is not None:
+            if self.is_multiclass:
+                item['labels'] = torch.tensor(self.labels[idx, :], dtype=torch.float)
+            else:
+                item['labels'] = torch.tensor(self.labels[idx], dtype=torch.long)
         return item
 
     def __len__(self):
-        return len(self.labels)
+        return len(self.encodings["input_ids"])
 
 def get_splits(dataset_name, training_type):
     df = pd.read_csv(os.path.join("./data", f"{dataset_name}_{training_type}.csv"))

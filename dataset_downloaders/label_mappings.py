@@ -57,15 +57,30 @@ relevance_dataset_mappings = {
 
 
 bfo_dataset_mappings = {
+    "di_sorbo_2016": {
+        "bug": ["[BUG]"],
+        "feature": ["[REQUEST]"],
+        "other": ["[INFO]", "[QUESTION]"]
+    },
     "guzman_2015": {
         "bug": ["Bug report"],
         "feature": ["Feature shortcoming", 'User request'],
         "other": ["Complaint", "Noise", "Praise", "Usage scenario", "Feature strength"]
     },
+    "scalabrino_2017": {
+        "bug": ["BUG"],
+        "feature": ["FEATURE"],
+        "other": ["ENERGY","PERFORMANCE","SECURITY","USABILITY"]
+    },
     "maalej_2016": {
         "bug": ["Bug"],
         "feature": ["Feature"],
         "other": ["Rating", "UserExperience"]
+    },
+    "tizard_2019": {
+        "bug": ["apparent bug"],
+        "feature": ["feature request"],
+        "other": ["acknowledgement of problem resolution", "agreeing with the feature request", "agreeing with the problem", "application guidance", "application usage", "attempted solution", "dispraise for application", "limitation confirmation", "malfunction confirmation", "praise for application", "question on application", "question on background", "user setup", "non-informative", "requesting more information", "help seeking"]
     },
     "williams_2017": {
         "bug": ["bug"],
